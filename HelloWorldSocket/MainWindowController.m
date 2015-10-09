@@ -1,0 +1,88 @@
+//
+//  MainWindowController.m
+//  HelloWorldSocket
+//
+//  Created by Airatch on 10/7/15.
+//  Copyright (c) 2015 AirWatch. All rights reserved.
+//
+
+#import "MainWindowController.h"
+#include <stdio.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <arpa/inet.h>
+
+
+@interface MainWindowController ()
+
+@property (atomic) int count;
+
+@end
+
+@implementation MainWindowController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do view setup here.
+    
+}
+- (IBAction)onClick:(id)sender {
+    
+    printf("\nUser said connect to socket!");
+
+    
+    //write some code here to create a new socket and write something to it!
+    
+    
+    int clientSocket = 0;
+    char buffer[1024];
+    
+    if (clientSocket == 0) {
+        clientSocket = [self getClientSocket];
+    }
+    
+    //send something to Xamarin
+    send(clientSocket, "SYN" , 1024, 0);
+    
+    
+    /*---- Read the message from the server into the buffer ----*/
+    recv(clientSocket, buffer, 1024, 0);
+    
+    /*---- Print the received message ----*/
+    printf("\nData received: %s",buffer);
+    
+}
+
+-(int)getClientSocket {
+    int clientSocket;
+    struct sockaddr_in serverAddr;
+    socklen_t addr_size;
+    
+    /*---- Create the socket. The three arguments are: ----*/
+    /* 1) Internet domain 2) Stream socket 3) Default protocol (TCP in this case) */
+    clientSocket = socket(PF_INET, SOCK_STREAM, 0);
+    
+    /*---- Configure settings of the server address struct ----*/
+    /* Address family = Internet */
+    serverAddr.sin_family = AF_INET;
+    /* Set port number, using htons function to use proper byte order */
+    serverAddr.sin_port = htons(8888);
+    /* Set IP address to localhost */
+    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    /* Set all bits of the padding field to 0 */
+    memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
+    
+    /*---- Connect the socket to the server using the address struct ----*/
+    addr_size = sizeof serverAddr;
+    connect(clientSocket, (struct sockaddr *) &serverAddr, addr_size);
+    return clientSocket;
+}
+
+@end
