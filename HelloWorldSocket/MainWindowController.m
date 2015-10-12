@@ -22,24 +22,28 @@
 
 @interface MainWindowController ()
 
-@property (atomic) int count;
-
 @end
+
+
+static int count;
 
 @implementation MainWindowController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do view setup here.
+    count = 0;
     
 }
+
 - (IBAction)onClick:(id)sender {
     
-    printf("\nUser said connect to socket!");
+    printf("\n\nUser said connect to socket! %d", count);
 
     
     //write some code here to create a new socket and write something to it!
     
+    count++;
     
     int clientSocket = 0;
     char buffer[1024];
@@ -57,6 +61,16 @@
     
     /*---- Print the received message ----*/
     printf("\nData received: %s",buffer);
+    
+
+    //NSString *receivedData = [NSString stringWithCString:buffer encoding:NSASCIIStringEncoding];
+    
+    //if([receivedData containsString:@"SYN/ACK"]){
+        //clientSocket = [self getClientSocket];
+
+        send(clientSocket, "ACK", 1024, 0);
+        printf("\n Sending acknowledgement to CS!");
+    //}
     
 }
 
